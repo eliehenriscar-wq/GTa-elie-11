@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lavi mwen - Mario</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #111;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            user-select: none;
+        }
+        h1 {
+            color: #00d9ff;
+            margin: 10px 0;
+            font-size: 1.6rem;
+        }
+        .stats {
+            display: flex;
+            gap: 25px;
+            background: #1a1a2e;
+            padding: 10px 20px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        .stats span {
+            color: #00ff9f;
+            font-weight: bold;
+        }
+        #game {
+            position: relative;
+            width: 700px;
+            height: 500px;
+            background: #2d3436;
+            border: 4px solid #00d9ff;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+        .room {
+            position: absolute;
+            border: 2px solid #636e72;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #b2bec3;
+            pointer-events: none;
+        }
+        #player {
+            position: absolute;
+            width: 52px;
+            height: 52px;
+            z-index: 20;
+            pointer-events: none;
+        }
+        #player img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .object {
+            position: absolute;
+            font-size: 28px;
+            z-index: 5;
+            pointer-events: none;
+        }
+        #message {
+            margin-top: 12px;
+            background: #1a1a2e;
+            padding: 12px 20px;
+            border-radius: 10px;
+            width: 700px;
+            text-align: center;
+            min-height: 50px;
+            border-left: 5px solid #00d9ff;
+        }
+        .controls {
+            margin-top: 10px;
+            color: #aaa;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏠 Lavi mwen</h1>
+
+    <div class="stats">
+        <div>Enèji: <span id="energy">100</span></div>
+        <div>Lajan: <span id="money">500</span> G</div>
+        <div>Grangou: <span id="hunger">30</span></div>
+    </div>
+
+    <div id="game">
+        <!-- Cômodos -->
+        <div class="room" style="left:0; top:0; width:350px; height:250px; background:#3d3d5c;">Chanm</div>
+        <div class="room" style="left:350px; top:0; width:350px; height:250px; background:#2c3e50;">Salon</div>
+        <div class="room" style="left:0; top:250px; width:200px; height:250px; background:#1e3799;">Douche</div>
+        <div class="room" style="left:200px; top:250px; width:250px; height:250px; background:#6ab04c;">Cuisine</div>
+        <div class="room" style="left:450px; top:250px; width:250px; height:250px; background:#535c68;">Garaj</div>
+
+        <!-- Objetos -->
+        <div class="object" style="left:40px; top:40px;">🛏️</div>
+        <div class="object" style="left:50px; top:320px;">🚿</div>
+        <div class="object" style="left:280px; top:320px;">🧊</div>
+        <div class="object" style="left:480px; top:40px;">📺</div>
+        <div class="object" style="left:520px; top:340px;">🚗</div>
+        <div class="object" style="left:620px; top:200px;">🚪</div>
+
+        <!-- Mario -->
+        <div id="player">
+            <img src="mario.png" alt="Mario">
+        </div>
+    </div>
+
+    <div id="message">Clique em qualquer lugar da casa para o Mario andar. Clique perto de um objeto para interagir.</div>
+
+    <div class="controls">
+        Clique com o mouse para andar • Clique perto da cama, chuveiro, geladeira, carro ou porta para interagir
+    </div>
+
+    <script>
+        const player = document.getElementById("player");
+        const game = document.getElementById("game");
+        const message = document.getElementById("message");
+
+        let x = 80;
+        let y = 100;
+        let targetX = x;
+        let targetY = y;
+        let energy = 100;
+        let money = 500;
+        let hunger = 30;
+        const speed = 3.2;
+
+        const objects = [
+            { x: 40,  y: 40,  name: "Cama",      action: "sleep" },
+            { x: 50,  y: 320, name: "Chuveiro",  action: "shower" },
+            { x: 280, y: 320, name: "Geladeira", action: "eat" },
+            { x: 480, y: 40,  name: "TV",        action: "tv" },
+            { x: 520, y: 340, name: "Carro",     action: "car" },
+            { x: 620, y: 200, name: "Porta",     action: "outside" }
+        ];
+
+        function updateStats() {
+            document.getElementById("energy").textContent = Math.floor(energy);
+            document.getElementById("money").textContent = money;
+            document.getElementById("hunger").textContent = Math.floor(hunger);
+        }
+
+        function showMessage(text) {
+            message.innerHTML = text;
+        }
+
+        function isNear(obj) {
+            return Math.abs(x - obj.x) < 55 && Math.abs(y - obj.y) < 55;
+        }
+
+        function doAction(action) {
+            if (action === "sleep") {
+                energy = Math.min(100, energy + 40);
+                hunger += 10;
+                showMessage("Mario dormiu na cama. Energia recuperada!");
+            }
+            else if (action === "shower") {
+                energy = Math.min(100, energy + 15);
+                showMessage("Mario tomou banho. Está fresco!");
+            }
+            else if (action === "eat") {
+                if (hunger > 10) {
+                    hunger = Math.max(0, hunger - 35);
+                    energy = Math.min(100, energy + 15);
+                    showMessage("Mario comeu. Fome diminuiu!");
+                } else {
+                    showMessage("Mario não está com tanta fome.");
+                }
+            }
+            else if (action === "tv") {
+                energy = Math.max(0, energy - 5);
+                hunger += 5;
+                showMessage("Mario assistiu um pouco de TV.");
+            }
+            else if (action === "car") {
+                showMessage("Mario entrou no carro... (vamos adicionar a rua depois)");
+            }
+            else if (action === "outside") {
+                showMessage("Mario saiu de casa! (Rua, mercado e hospital em breve)");
+            }
+            updateStats();
+        }
+
+        game.addEventListener("click", function(e) {
+            const rect = game.getBoundingClientRect();
+            const clickX = e.clientX - rect.left - 26;
+            const clickY = e.clientY - rect.top - 26;
+
+            let interacted = false;
+
+            for (let i = 0; i < objects.length; i++) {
+                const obj = objects[i];
+                if (Math.abs(clickX - obj.x) < 50 && Math.abs(clickY - obj.y) < 50) {
+                    if (isNear(obj)) {
+                        doAction(obj.action);
+                    } else {
+                        targetX = obj.x;
+                        targetY = obj.y;
+                        showMessage("Indo até " + obj.name + "...");
+                    }
+                    interacted = true;
+                    break;
+                }
+            }
+
+            if (!interacted) {
+                targetX = Math.max(0, Math.min(648, clickX));
+                targetY = Math.max(0, Math.min(448, clickY));
+            }
+        });
+
+        function movePlayer() {
+            const dx = targetX - x;
+            const dy = targetY - y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist > 2) {
+                x += (dx / dist) * speed;
+                y += (dy / dist) * speed;
+                energy = Math.max(0, energy - 0.03);
+                hunger = Math.min(100, hunger + 0.02);
+                updateStats();
+            }
+
+            player.style.left = x + "px";
+            player.style.top = y + "px";
+        }
+
+        function gameLoop() {
+            movePlayer();
+            requestAnimationFrame(gameLoop);
+        }
+
+        player.style.left = x + "px";
+        player.style.top = y + "px";
+        updateStats();
+        gameLoop();
+    </script>
+</body>
+</html>
