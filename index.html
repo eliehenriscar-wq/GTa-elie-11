@@ -3,327 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lavi mwen - Jwèt</title>
+    <title>Lavi mwen - Kontwòl Pèsonaj</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background: #1a1a2e;
-            color: #eee;
-            min-height: 100vh;
+            background: #111;
+            color: white;
+            font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center;
-            padding: 20px;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
         }
-        .game-container {
-            background: #16213e;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 520px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        h1 {
-            text-align: center;
-            color: #00d9ff;
-            margin-bottom: 15px;
-            font-size: 1.7rem;
-        }
+        h1 { color: #00d9ff; margin: 10px 0; font-size: 1.6rem; }
         .stats {
             display: flex;
-            justify-content: space-around;
-            background: #0f3460;
-            padding: 12px;
+            gap: 25px;
+            background: #1a1a2e;
+            padding: 10px 20px;
             border-radius: 12px;
-            margin-bottom: 18px;
-            font-size: 0.95rem;
+            margin-bottom: 12px;
+            font-size: 1rem;
         }
-        .stat {
+        .stats span { color: #00ff9f; font-weight: bold; }
+        #game {
+            position: relative;
+            width: 700px;
+            height: 500px;
+            background: #2d3436;
+            border: 4px solid #00d9ff;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .room {
+            position: absolute;
+            border: 2px solid #636e72;
+            background: #2d3436;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #b2bec3;
+        }
+        #player {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            font-size: 34px;
+            line-height: 40px;
             text-align: center;
+            z-index: 10;
+            transition: none;
         }
-        .stat span {
-            display: block;
-            font-weight: bold;
-            color: #00ff9f;
-            font-size: 1.25rem;
-        }
-        .character-area {
-            background: #0f3460;
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 18px;
-            min-height: 180px;
-        }
-        .character {
-            font-size: 5.5rem;
-            line-height: 1;
-            margin-bottom: 10px;
-            transition: 0.3s;
-        }
-        .location-name {
-            color: #ff9f1c;
-            font-size: 1.3rem;
-            font-weight: bold;
-            margin-bottom: 6px;
-        }
-        .location-desc {
-            color: #ccc;
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
-        .actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        button {
-            background: #e94560;
-            color: white;
-            border: none;
-            padding: 14px 8px;
-            border-radius: 10px;
-            font-size: 0.92rem;
+        .object {
+            position: absolute;
+            font-size: 28px;
+            z-index: 5;
             cursor: pointer;
-            font-weight: 600;
-            transition: 0.2s;
         }
-        button:hover {
-            background: #ff6b6b;
-            transform: translateY(-2px);
-        }
-        button:disabled {
-            background: #555;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .message {
-            background: #0f3460;
-            border-left: 5px solid #00d9ff;
-            padding: 12px 15px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            min-height: 55px;
-        }
-        .footer {
+        #message {
+            margin-top: 12px;
+            background: #1a1a2e;
+            padding: 12px 20px;
+            border-radius: 10px;
+            width: 700px;
             text-align: center;
-            margin-top: 15px;
-            font-size: 0.78rem;
-            color: #777;
+            min-height: 50px;
+            border-left: 5px solid #00d9ff;
+        }
+        .controls {
+            margin-top: 10px;
+            color: #aaa;
+            font-size: 0.9rem;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <h1>🏠 Lavi mwen</h1>
+    <h1>🏠 Lavi mwen</h1>
 
-        <div class="stats">
-            <div class="stat">Enèji<br><span id="energy">100</span></div>
-            <div class="stat">Lajan<br><span id="money">500</span> G</div>
-            <div class="stat">Grangou<br><span id="hunger">20</span></div>
+    <div class="stats">
+        <div>Enèji: <span id="energy">100</span></div>
+        <div>Lajan: <span id="money">500</span> G</div>
+        <div>Grangou: <span id="hunger">30</span></div>
+    </div>
+
+    <div id="game">
+        <!-- Chanm -->
+        <div class="room" style="left:0; top:0; width:350px; height:250px; background:#3d3d5c;">
+            Chanm
+        </div>
+        <!-- Salon -->
+        <div class="room" style="left:350px; top:0; width:350px; height:250px; background:#2c3e50;">
+            Salon
+        </div>
+        <!-- Douche -->
+        <div class="room" style="left:0; top:250px; width:200px; height:250px; background:#1e3799;">
+            Douche
+        </div>
+        <!-- Cuisine -->
+        <div class="room" style="left:200px; top:250px; width:250px; height:250px; background:#6ab04c;">
+            Cuisine
+        </div>
+        <!-- Garaj -->
+        <div class="room" style="left:450px; top:250px; width:250px; height:250px; background:#535c68;">
+            Garaj
         </div>
 
-        <div class="character-area">
-            <div class="character" id="character">🧑</div>
-            <div class="location-name" id="location-name">Chanm ou</div>
-            <div class="location-desc" id="location-desc">Ou nan chanm ou. Ou jis leve.</div>
-        </div>
+        <!-- Objek -->
+        <div class="object" id="bed" style="left:40px; top:40px;">🛏️</div>
+        <div class="object" id="shower" style="left:50px; top:320px;">🚿</div>
+        <div class="object" id="fridge" style="left:280px; top:320px;">🧊</div>
+        <div class="object" id="tv" style="left:480px; top:40px;">📺</div>
+        <div class="object" id="car" style="left:520px; top:340px;">🚗</div>
+        <div class="object" id="door" style="left:620px; top:200px;">🚪</div>
 
-        <div class="actions" id="actions"></div>
+        <!-- Pèsonaj -->
+        <div id="player">🧑</div>
+    </div>
 
-        <div class="message" id="message">Byenveni! Ou ka wè pèsonaj ou kounye a.</div>
+    <div id="message">Sèvi ak flèch oswa WASD pou mache. Peze <b>E</b> lè ou tou pre yon bagay pou entèaji.</div>
 
-        <div class="footer">Prototype v2 • Pèsonaj vizyèl + aksyon</div>
+    <div class="controls">
+        Flèch / WASD = Mache &nbsp;&nbsp;|&nbsp;&nbsp; E = Entèaji &nbsp;&nbsp;|&nbsp;&nbsp; Tou pre kabann, douche, frijidè, machin, pòt...
     </div>
 
     <script>
-        let state = {
-            location: "chanm",
-            energy: 100,
-            money: 500,
-            hunger: 20,
-            message: "Byenveni! Ou jis leve nan chanm ou."
+        const player = document.getElementById("player");
+        const message = document.getElementById("message");
+
+        let x = 80;
+        let y = 100;
+        let energy = 100;
+        let money = 500;
+        let hunger = 30;
+        const speed = 4;
+
+        const keys = {};
+
+        // Objek pozisyon
+        const objects = {
+            bed:    { x: 40,  y: 40,  w: 40, h: 40, action: "sleep" },
+            shower: { x: 50,  y: 320, w: 40, h: 40, action: "shower" },
+            fridge: { x: 280, y: 320, w: 40, h: 40, action: "eat" },
+            tv:     { x: 480, y: 40,  w: 40, h: 40, action: "tv" },
+            car:    { x: 520, y: 340, w: 40, h: 40, action: "car" },
+            door:   { x: 620, y: 200, w: 40, h: 40, action: "outside" }
         };
 
-        const places = {
-            chanm:  { name: "Chanm ou",           emoji: "🛏️", desc: "Ou nan chanm ou. Gen kabann ak rad." },
-            douche: { name: "Salle de bain",      emoji: "🚿", desc: "Ou nan salle de bain lan." },
-            cuisine:{ name: "Cuisine",            emoji: "🍳", desc: "Ou nan cuisine a. Ou ka manje." },
-            salon:  { name: "Salon",              emoji: "🛋️", desc: "Ou nan salon an. Gen TV." },
-            garaj:  { name: "Garaj",              emoji: "🚗", desc: "Ou nan garaj la. Machin ak moto ou la." },
-            lari:   { name: "Lari a",             emoji: "🛣️", desc: "Ou deyò nan lari a." },
-            maket:  { name: "Makèt",              emoji: "🛒", desc: "Ou nan makèt la." },
-            lopital:{ name: "Lopital",            emoji: "🏥", desc: "Ou nan lopital la." }
-        };
-
-        function getCharacterEmoji() {
-            if (state.energy < 25) return "😴";
-            if (state.hunger > 70) return "😩";
-            if (state.location === "douche") return "🧼";
-            if (state.location === "cuisine") return "🍽️";
-            if (state.location === "garaj") return "🧑‍🔧";
-            if (state.location === "lari") return "🚶";
-            if (state.location === "maket") return "🛍️";
-            if (state.location === "lopital") return "🤒";
-            return "🧑";
+        function updateStats() {
+            document.getElementById("energy").textContent = energy;
+            document.getElementById("money").textContent = money;
+            document.getElementById("hunger").textContent = hunger;
         }
 
-        function updateUI() {
-            document.getElementById("energy").textContent = state.energy;
-            document.getElementById("money").textContent = state.money;
-            document.getElementById("hunger").textContent = state.hunger;
-
-            document.getElementById("character").textContent = getCharacterEmoji();
-            document.getElementById("location-name").textContent = places[state.location].name;
-            document.getElementById("location-desc").textContent = places[state.location].desc;
-            document.getElementById("message").textContent = state.message;
-
-            renderActions();
+        function showMessage(text) {
+            message.innerHTML = text;
         }
 
-        function renderActions() {
-            const div = document.getElementById("actions");
-            div.innerHTML = "";
-            const buttons = getPossibleActions();
-
-            buttons.forEach(btn => {
-                const b = document.createElement("button");
-                b.textContent = btn.label;
-                b.onclick = btn.action;
-                div.appendChild(b);
-            });
+        function isNear(obj) {
+            return Math.abs(x - obj.x) < 50 && Math.abs(y - obj.y) < 50;
         }
 
-        function getPossibleActions() {
-            const loc = state.location;
-            let btns = [];
-
-            if (loc === "chanm") {
-                btns.push({ label: "😴 Dòmi", action: () => sleep() });
-                btns.push({ label: "🚪 Ale Salon", action: () => goTo("salon") });
-                btns.push({ label: "🚿 Ale Douche", action: () => goTo("douche") });
+        function interact() {
+            for (let key in objects) {
+                const obj = objects[key];
+                if (isNear(obj)) {
+                    doAction(obj.action);
+                    return;
+                }
             }
-            if (loc === "douche") {
-                btns.push({ label: "🧼 Benyen", action: () => takeShower() });
-                btns.push({ label: "🚪 Tounen Chanm", action: () => goTo("chanm") });
-                btns.push({ label: "🚪 Ale Salon", action: () => goTo("salon") });
-            }
-            if (loc === "salon") {
-                btns.push({ label: "📺 Gade TV", action: () => watchTV() });
-                btns.push({ label: "🚪 Ale Chanm", action: () => goTo("chanm") });
-                btns.push({ label: "🚪 Ale Cuisine", action: () => goTo("cuisine") });
-                btns.push({ label: "🚪 Ale Garaj", action: () => goTo("garaj") });
-                btns.push({ label: "🚪 Soti deyò", action: () => goTo("lari") });
-            }
-            if (loc === "cuisine") {
-                btns.push({ label: "🍽️ Manje", action: () => eat() });
-                btns.push({ label: "🚪 Tounen Salon", action: () => goTo("salon") });
-            }
-            if (loc === "garaj") {
-                btns.push({ label: "🚗 Pran machin", action: () => goTo("lari") });
-                btns.push({ label: "🏍️ Pran moto", action: () => goTo("lari") });
-                btns.push({ label: "🚪 Tounen Salon", action: () => goTo("salon") });
-            }
-            if (loc === "lari") {
-                btns.push({ label: "🛒 Ale Makèt", action: () => goTo("maket") });
-                btns.push({ label: "🏥 Ale Lopital", action: () => goTo("lopital") });
-                btns.push({ label: "🏠 Tounen lakay", action: () => goTo("salon") });
-            }
-            if (loc === "maket") {
-                btns.push({ label: "🍎 Achte manje (50G)", action: () => buyFood() });
-                btns.push({ label: "🚪 Tounen Lari", action: () => goTo("lari") });
-            }
-            if (loc === "lopital") {
-                btns.push({ label: "💊 Tcheke sante", action: () => checkHealth() });
-                btns.push({ label: "🚪 Tounen Lari", action: () => goTo("lari") });
-            }
-            return btns;
+            showMessage("Pa gen anyen tou pre ou pou entèaji.");
         }
 
-        function goTo(place) {
-            if (state.energy < 8) {
-                state.message = "Ou twò fatige! Dòmi oswa manje rapid.";
-                updateUI();
-                return;
+        function doAction(action) {
+            if (action === "sleep") {
+                energy = Math.min(100, energy + 40);
+                hunger += 10;
+                showMessage("Ou dòmi sou kabann nan. Enèji ou monte!");
             }
-            state.location = place;
-            state.energy -= 6;
-            state.hunger += 4;
-            state.message = `Ou ale nan ${places[place].name}.`;
-            checkStats();
-            updateUI();
-        }
-
-        function sleep() {
-            state.energy = Math.min(100, state.energy + 45);
-            state.hunger += 12;
-            state.message = "Ou dòmi byen. Enèji ou monte!";
-            checkStats();
-            updateUI();
-        }
-
-        function takeShower() {
-            state.energy = Math.min(100, state.energy + 12);
-            state.message = "Ou benyen. Ou santi ou fre epi pwòp!";
-            updateUI();
-        }
-
-        function eat() {
-            if (state.hunger < 15) {
-                state.message = "Ou pa grangou anpil kounye a.";
-            } else {
-                state.hunger = Math.max(0, state.hunger - 35);
-                state.energy = Math.min(100, state.energy + 18);
-                state.message = "Ou manje byen!";
+            else if (action === "shower") {
+                energy = Math.min(100, energy + 15);
+                showMessage("Ou benyen. Ou santi ou fre!");
             }
-            checkStats();
-            updateUI();
-        }
-
-        function watchTV() {
-            state.energy = Math.max(0, state.energy - 6);
-            state.hunger += 6;
-            state.message = "Ou gade televizyon. Ou detann ou.";
-            checkStats();
-            updateUI();
-        }
-
-        function buyFood() {
-            if (state.money < 50) {
-                state.message = "Ou pa gen ase lajan!";
-            } else {
-                state.money -= 50;
-                state.hunger = Math.max(0, state.hunger - 45);
-                state.message = "Ou achte manje. Grangou ou desann!";
+            else if (action === "eat") {
+                if (hunger > 10) {
+                    hunger = Math.max(0, hunger - 35);
+                    energy = Math.min(100, energy + 15);
+                    showMessage("Ou manje. Grangou ou desann!");
+                } else {
+                    showMessage("Ou pa grangou anpil.");
+                }
             }
-            updateUI();
-        }
-
-        function checkHealth() {
-            state.message = "Doktè a di ou an sante! Pa gen pwoblèm.";
-            updateUI();
-        }
-
-        function checkStats() {
-            if (state.energy <= 0) {
-                state.energy = 0;
-                state.message = "Ou tonbe akoz fatig! Ou tounen nan chanm.";
-                state.location = "chanm";
-                state.energy = 35;
+            else if (action === "tv") {
+                energy = Math.max(0, energy - 5);
+                hunger += 5;
+                showMessage("Ou gade televizyon yon ti moman.");
             }
-            if (state.hunger >= 100) {
-                state.hunger = 100;
-                state.message = "Ou twò grangou! Ou pèdi enèji.";
-                state.energy = Math.max(0, state.energy - 20);
+            else if (action === "car") {
+                showMessage("Ou monte nan machin nan... (Poukounye a ou rete nan garaj la)");
+            }
+            else if (action === "outside") {
+                showMessage("Ou soti deyò! (Nou pral ajoute lari, makèt, lopital pita)");
+            }
+            updateStats();
+        }
+
+        function movePlayer() {
+            let newX = x;
+            let newY = y;
+
+            if (keys["ArrowUp"] || keys["w"] || keys["W"]) newY -= speed;
+            if (keys["ArrowDown"] || keys["s"] || keys["S"]) newY += speed;
+            if (keys["ArrowLeft"] || keys["a"] || keys["A"]) newX -= speed;
+            if (keys["ArrowRight"] || keys["d"] || keys["D"]) newX += speed;
+
+            // Limit nan ekran an
+            newX = Math.max(0, Math.min(660, newX));
+            newY = Math.max(0, Math.min(460, newY));
+
+            x = newX;
+            y = newY;
+
+            player.style.left = x + "px";
+            player.style.top = y + "px";
+
+            // Ti fatig lè w ap mache
+            if (keys["ArrowUp"] || keys["ArrowDown"] || keys["ArrowLeft"] || keys["ArrowRight"] ||
+                keys["w"] || keys["a"] || keys["s"] || keys["d"] || keys["W"] || keys["A"] || keys["S"] || keys["D"]) {
+                energy = Math.max(0, energy - 0.02);
+                hunger = Math.min(100, hunger + 0.015);
+                updateStats();
             }
         }
 
-        updateUI();
+        document.addEventListener("keydown", (e) => {
+            keys[e.key] = true;
+
+            if (e.key === "e" || e.key === "E") {
+                interact();
+            }
+        });
+
+        document.addEventListener("keyup", (e) => {
+            keys[e.key] = false;
+        });
+
+        // Bouk jwèt
+        function gameLoop() {
+            movePlayer();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Kòmanse
+        player.style.left = x + "px";
+        player.style.top = y + "px";
+        updateStats();
+        gameLoop();
     </script>
 </body>
 </html>
