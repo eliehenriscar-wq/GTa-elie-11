@@ -17,30 +17,29 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
             padding: 20px;
         }
         .game-container {
             background: #16213e;
             border-radius: 16px;
             width: 100%;
-            max-width: 600px;
-            padding: 25px;
+            max-width: 520px;
+            padding: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         h1 {
             text-align: center;
             color: #00d9ff;
-            margin-bottom: 10px;
-            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-size: 1.7rem;
         }
         .stats {
             display: flex;
             justify-content: space-around;
             background: #0f3460;
             padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            margin-bottom: 18px;
             font-size: 0.95rem;
         }
         .stat {
@@ -50,39 +49,49 @@
             display: block;
             font-weight: bold;
             color: #00ff9f;
-            font-size: 1.2rem;
+            font-size: 1.25rem;
         }
-        .location {
+        .character-area {
             background: #0f3460;
-            padding: 18px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            min-height: 120px;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 18px;
+            min-height: 180px;
         }
-        .location h2 {
-            color: #ff9f1c;
+        .character {
+            font-size: 5.5rem;
+            line-height: 1;
             margin-bottom: 10px;
-            font-size: 1.3rem;
+            transition: 0.3s;
         }
-        .location p {
-            line-height: 1.5;
-            color: #ddd;
+        .location-name {
+            color: #ff9f1c;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        .location-desc {
+            color: #ccc;
+            font-size: 0.95rem;
+            line-height: 1.4;
         }
         .actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
+            margin-bottom: 15px;
         }
         button {
             background: #e94560;
             color: white;
             border: none;
-            padding: 14px 10px;
+            padding: 14px 8px;
             border-radius: 10px;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             cursor: pointer;
-            transition: 0.2s;
             font-weight: 600;
+            transition: 0.2s;
         }
         button:hover {
             background: #ff6b6b;
@@ -94,19 +103,18 @@
             transform: none;
         }
         .message {
-            margin-top: 15px;
-            padding: 12px;
             background: #0f3460;
-            border-left: 4px solid #00d9ff;
+            border-left: 5px solid #00d9ff;
+            padding: 12px 15px;
             border-radius: 8px;
-            min-height: 50px;
             font-size: 0.95rem;
+            min-height: 55px;
         }
         .footer {
             text-align: center;
-            margin-top: 20px;
-            font-size: 0.8rem;
-            color: #888;
+            margin-top: 15px;
+            font-size: 0.78rem;
+            color: #777;
         }
     </style>
 </head>
@@ -115,92 +123,62 @@
         <h1>🏠 Lavi mwen</h1>
 
         <div class="stats">
-            <div class="stat">
-                Enèji
-                <span id="energy">100</span>
-            </div>
-            <div class="stat">
-                Lajan
-                <span id="money">500</span> G
-            </div>
-            <div class="stat">
-                Grangou
-                <span id="hunger">20</span>
-            </div>
+            <div class="stat">Enèji<br><span id="energy">100</span></div>
+            <div class="stat">Lajan<br><span id="money">500</span> G</div>
+            <div class="stat">Grangou<br><span id="hunger">20</span></div>
         </div>
 
-        <div class="location">
-            <h2 id="location-name">Chanm ou</h2>
-            <p id="location-desc">Ou nan chanm ou. Li fè nwa yon ti jan. Ou jis leve.</p>
+        <div class="character-area">
+            <div class="character" id="character">🧑</div>
+            <div class="location-name" id="location-name">Chanm ou</div>
+            <div class="location-desc" id="location-desc">Ou nan chanm ou. Ou jis leve.</div>
         </div>
 
-        <div class="actions" id="actions">
-            <!-- Bouton yo ap ajoute otomatikman -->
-        </div>
+        <div class="actions" id="actions"></div>
 
-        <div class="message" id="message">
-            Byenveni nan jwèt la! Kòmanse pa leve oswa fè yon aksyon.
-        </div>
+        <div class="message" id="message">Byenveni! Ou ka wè pèsonaj ou kounye a.</div>
 
-        <div class="footer">
-            Prototype v1 • Ou ka modifye li jan ou vle
-        </div>
+        <div class="footer">Prototype v2 • Pèsonaj vizyèl + aksyon</div>
     </div>
 
     <script>
-        // ========== ETA JWE A ==========
         let state = {
             location: "chanm",
             energy: 100,
             money: 500,
             hunger: 20,
-            hasCar: true,
-            hasMoto: true,
-            showered: false,
             message: "Byenveni! Ou jis leve nan chanm ou."
         };
 
-        // ========== DESKRIPSYON KOTE YO ==========
         const places = {
-            chanm: {
-                name: "Chanm ou",
-                desc: "Ou nan chanm ou. Gen yon kabann, yon tab, ak yon zafè rad. Ou ka dòmi oswa soti."
-            },
-            douche: {
-                name: "Salle de bain",
-                desc: "Ou nan salle de bain lan. Gen douche, twalèt, ak mirwa."
-            },
-            cuisine: {
-                name: "Cuisine / Sal a manje",
-                desc: "Ou nan cuisine a. Gen frijidè, fò, ak tab pou manje."
-            },
-            salon: {
-                name: "Salon",
-                desc: "Ou nan salon an. Gen kanape, televizyon, ak yon ti tablo."
-            },
-            garaj: {
-                name: "Garaj",
-                desc: "Ou nan garaj la. Machin ou ak moto ou la. Ou ka pran yo pou soti."
-            },
-            lari: {
-                name: "Lari a",
-                desc: "Ou deyò nan lari a. Ou ka ale nan makèt, lopital, oswa retounen lakay."
-            },
-            maket: {
-                name: "Makèt",
-                desc: "Ou nan makèt la. Ou ka achte manje ak lòt bagay."
-            },
-            lopital: {
-                name: "Lopital",
-                desc: "Ou nan lopital la. Ou ka fè tcheke sante ou (pou kounye a li jis la)."
-            }
+            chanm:  { name: "Chanm ou",           emoji: "🛏️", desc: "Ou nan chanm ou. Gen kabann ak rad." },
+            douche: { name: "Salle de bain",      emoji: "🚿", desc: "Ou nan salle de bain lan." },
+            cuisine:{ name: "Cuisine",            emoji: "🍳", desc: "Ou nan cuisine a. Ou ka manje." },
+            salon:  { name: "Salon",              emoji: "🛋️", desc: "Ou nan salon an. Gen TV." },
+            garaj:  { name: "Garaj",              emoji: "🚗", desc: "Ou nan garaj la. Machin ak moto ou la." },
+            lari:   { name: "Lari a",             emoji: "🛣️", desc: "Ou deyò nan lari a." },
+            maket:  { name: "Makèt",              emoji: "🛒", desc: "Ou nan makèt la." },
+            lopital:{ name: "Lopital",            emoji: "🏥", desc: "Ou nan lopital la." }
         };
 
-        // ========== FONKSYON POU AFISE ==========
+        function getCharacterEmoji() {
+            if (state.energy < 25) return "😴";
+            if (state.hunger > 70) return "😩";
+            if (state.location === "douche") return "🧼";
+            if (state.location === "cuisine") return "🍽️";
+            if (state.location === "garaj") return "🧑‍🔧";
+            if (state.location === "lari") return "🚶";
+            if (state.location === "maket") return "🛍️";
+            if (state.location === "lopital") return "🤒";
+            return "🧑";
+        }
+
         function updateUI() {
             document.getElementById("energy").textContent = state.energy;
             document.getElementById("money").textContent = state.money;
             document.getElementById("hunger").textContent = state.hunger;
+
+            document.getElementById("character").textContent = getCharacterEmoji();
             document.getElementById("location-name").textContent = places[state.location].name;
             document.getElementById("location-desc").textContent = places[state.location].desc;
             document.getElementById("message").textContent = state.message;
@@ -209,122 +187,108 @@
         }
 
         function renderActions() {
-            const actionsDiv = document.getElementById("actions");
-            actionsDiv.innerHTML = "";
-
+            const div = document.getElementById("actions");
+            div.innerHTML = "";
             const buttons = getPossibleActions();
 
             buttons.forEach(btn => {
-                const button = document.createElement("button");
-                button.textContent = btn.label;
-                button.disabled = btn.disabled || false;
-                button.onclick = btn.action;
-                actionsDiv.appendChild(button);
+                const b = document.createElement("button");
+                b.textContent = btn.label;
+                b.onclick = btn.action;
+                div.appendChild(b);
             });
         }
 
-        // ========== AKSYon KI POSIB SELON KOTE ==========
         function getPossibleActions() {
             const loc = state.location;
-            let buttons = [];
+            let btns = [];
 
-            // Aksyon komen
             if (loc === "chanm") {
-                buttons.push({ label: "😴 Dòmi (recharge enèji)", action: () => sleep() });
-                buttons.push({ label: "🚪 Ale nan Salon", action: () => goTo("salon") });
-                buttons.push({ label: "🚿 Ale nan Douche", action: () => goTo("douche") });
+                btns.push({ label: "😴 Dòmi", action: () => sleep() });
+                btns.push({ label: "🚪 Ale Salon", action: () => goTo("salon") });
+                btns.push({ label: "🚿 Ale Douche", action: () => goTo("douche") });
             }
-
             if (loc === "douche") {
-                buttons.push({ label: "🧼 Benyen (refrese)", action: () => takeShower() });
-                buttons.push({ label: "🚪 Tounen nan Chanm", action: () => goTo("chanm") });
-                buttons.push({ label: "🚪 Ale nan Salon", action: () => goTo("salon") });
+                btns.push({ label: "🧼 Benyen", action: () => takeShower() });
+                btns.push({ label: "🚪 Tounen Chanm", action: () => goTo("chanm") });
+                btns.push({ label: "🚪 Ale Salon", action: () => goTo("salon") });
             }
-
             if (loc === "salon") {
-                buttons.push({ label: "📺 Gade televizyon", action: () => watchTV() });
-                buttons.push({ label: "🚪 Ale nan Chanm", action: () => goTo("chanm") });
-                buttons.push({ label: "🚪 Ale nan Cuisine", action: () => goTo("cuisine") });
-                buttons.push({ label: "🚪 Ale nan Garaj", action: () => goTo("garaj") });
-                buttons.push({ label: "🚪 Soti deyò (Lari)", action: () => goTo("lari") });
+                btns.push({ label: "📺 Gade TV", action: () => watchTV() });
+                btns.push({ label: "🚪 Ale Chanm", action: () => goTo("chanm") });
+                btns.push({ label: "🚪 Ale Cuisine", action: () => goTo("cuisine") });
+                btns.push({ label: "🚪 Ale Garaj", action: () => goTo("garaj") });
+                btns.push({ label: "🚪 Soti deyò", action: () => goTo("lari") });
             }
-
             if (loc === "cuisine") {
-                buttons.push({ label: "🍽️ Manje", action: () => eat() });
-                buttons.push({ label: "🚪 Tounen nan Salon", action: () => goTo("salon") });
+                btns.push({ label: "🍽️ Manje", action: () => eat() });
+                btns.push({ label: "🚪 Tounen Salon", action: () => goTo("salon") });
             }
-
             if (loc === "garaj") {
-                buttons.push({ label: "🚗 Pran machin nan epi soti", action: () => goTo("lari") });
-                buttons.push({ label: "🏍️ Pran moto a epi soti", action: () => goTo("lari") });
-                buttons.push({ label: "🚪 Tounen nan Salon", action: () => goTo("salon") });
+                btns.push({ label: "🚗 Pran machin", action: () => goTo("lari") });
+                btns.push({ label: "🏍️ Pran moto", action: () => goTo("lari") });
+                btns.push({ label: "🚪 Tounen Salon", action: () => goTo("salon") });
             }
-
             if (loc === "lari") {
-                buttons.push({ label: "🛒 Ale nan Makèt", action: () => goTo("maket") });
-                buttons.push({ label: "🏥 Ale nan Lopital", action: () => goTo("lopital") });
-                buttons.push({ label: "🏠 Tounen lakay (Salon)", action: () => goTo("salon") });
+                btns.push({ label: "🛒 Ale Makèt", action: () => goTo("maket") });
+                btns.push({ label: "🏥 Ale Lopital", action: () => goTo("lopital") });
+                btns.push({ label: "🏠 Tounen lakay", action: () => goTo("salon") });
             }
-
             if (loc === "maket") {
-                buttons.push({ label: "🍎 Achte manje (50 G)", action: () => buyFood() });
-                buttons.push({ label: "🚪 Tounen nan Lari", action: () => goTo("lari") });
+                btns.push({ label: "🍎 Achte manje (50G)", action: () => buyFood() });
+                btns.push({ label: "🚪 Tounen Lari", action: () => goTo("lari") });
             }
-
             if (loc === "lopital") {
-                buttons.push({ label: "💊 Fè tcheke sante", action: () => checkHealth() });
-                buttons.push({ label: "🚪 Tounen nan Lari", action: () => goTo("lari") });
+                btns.push({ label: "💊 Tcheke sante", action: () => checkHealth() });
+                btns.push({ label: "🚪 Tounen Lari", action: () => goTo("lari") });
             }
-
-            return buttons;
+            return btns;
         }
 
-        // ========== FONKSYON AKSYon ==========
         function goTo(place) {
-            if (state.energy < 5) {
-                state.message = "Ou twò fatige! Ou bezwen dòmi oswa manje.";
+            if (state.energy < 8) {
+                state.message = "Ou twò fatige! Dòmi oswa manje rapid.";
                 updateUI();
                 return;
             }
             state.location = place;
-            state.energy -= 5;
-            state.hunger += 3;
+            state.energy -= 6;
+            state.hunger += 4;
             state.message = `Ou ale nan ${places[place].name}.`;
             checkStats();
             updateUI();
         }
 
         function sleep() {
-            state.energy = Math.min(100, state.energy + 40);
-            state.hunger += 10;
-            state.message = "Ou dòmi byen. Enèji ou ogmante!";
+            state.energy = Math.min(100, state.energy + 45);
+            state.hunger += 12;
+            state.message = "Ou dòmi byen. Enèji ou monte!";
             checkStats();
             updateUI();
         }
 
         function takeShower() {
-            state.energy = Math.min(100, state.energy + 10);
-            state.showered = true;
+            state.energy = Math.min(100, state.energy + 12);
             state.message = "Ou benyen. Ou santi ou fre epi pwòp!";
             updateUI();
         }
 
         function eat() {
-            if (state.hunger <= 10) {
+            if (state.hunger < 15) {
                 state.message = "Ou pa grangou anpil kounye a.";
             } else {
-                state.hunger = Math.max(0, state.hunger - 30);
-                state.energy = Math.min(100, state.energy + 15);
-                state.message = "Ou manje byen. Grangou ou desann!";
+                state.hunger = Math.max(0, state.hunger - 35);
+                state.energy = Math.min(100, state.energy + 18);
+                state.message = "Ou manje byen!";
             }
             checkStats();
             updateUI();
         }
 
         function watchTV() {
-            state.energy = Math.max(0, state.energy - 5);
-            state.hunger += 5;
-            state.message = "Ou gade televizyon yon ti moman. Ou ri yon ti jan.";
+            state.energy = Math.max(0, state.energy - 6);
+            state.hunger += 6;
+            state.message = "Ou gade televizyon. Ou detann ou.";
             checkStats();
             updateUI();
         }
@@ -334,32 +298,31 @@
                 state.message = "Ou pa gen ase lajan!";
             } else {
                 state.money -= 50;
-                state.hunger = Math.max(0, state.hunger - 40);
-                state.message = "Ou achte manje. Ou santi ou pi byen!";
+                state.hunger = Math.max(0, state.hunger - 45);
+                state.message = "Ou achte manje. Grangou ou desann!";
             }
             updateUI();
         }
 
         function checkHealth() {
-            state.message = "Doktè a di ou an sante! (Poukounye a pa gen maladi nan jwèt la)";
+            state.message = "Doktè a di ou an sante! Pa gen pwoblèm.";
             updateUI();
         }
 
         function checkStats() {
             if (state.energy <= 0) {
                 state.energy = 0;
-                state.message = "Ou tonbe akoz fatig! Ou dòmi fòse.";
+                state.message = "Ou tonbe akoz fatig! Ou tounen nan chanm.";
                 state.location = "chanm";
-                state.energy = 30;
+                state.energy = 35;
             }
             if (state.hunger >= 100) {
                 state.hunger = 100;
-                state.message = "Ou twò grangou! Ou bezwen manje rapid.";
-                state.energy = Math.max(0, state.energy - 15);
+                state.message = "Ou twò grangou! Ou pèdi enèji.";
+                state.energy = Math.max(0, state.energy - 20);
             }
         }
 
-        // Kòmanse jwèt la
         updateUI();
     </script>
 </body>
